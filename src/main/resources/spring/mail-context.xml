@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+		  xmlns:task="http://www.springframework.org/schema/task"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd
+          http://www.springframework.org/schema/task
+          http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+    
+    <!-- 
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    	<property name="host" value="${py.mail.host}" />
+    	<property name="port" value="${py.mail.port}" />
+    	<property name="protocol" value="smtp" />
+    	<property name="username" value="${py.mail.username}" />
+    	<property name="password" value="${py.mail.password}" />
+    	
+    	<property name="javaMailProperties">
+    		<props>
+    			<prop key="mail.smtp.auth">true</prop>
+    			<prop key="mail.smtp.starttls.enable">true</prop>
+    		</props>
+    	</property>
+    </bean>
+    -->
+    
+    <bean id="fromString" class="java.lang.String">
+    	<constructor-arg type="java.lang.String" value="${py.mail.fromName} &lt;${py.mail.from}&gt;" />
+    </bean>
+    
+    <bean id="replyToString" class="java.lang.String">
+    	<constructor-arg type="java.lang.String" value="${py.mail.from}" />
+    </bean>
+    
+    <bean id="confirmationDetails" class="com.py.py.service.mail.EmailDetailsImpl">
+    	<property name="from" ref="fromString" />
+    	<property name="replyTo" ref="replyToString" />
+    	<property name="subject" value="Account Confirmation" />
+    	<property name="link" value="${py.web.host}${py.mail.link.confirmation}" />
+    	<property name="text">
+    		<value>
+    			<![CDATA[
+Hello <username>,
+Welcome to Penstro!
+
+Please visit the link below to confirm this email. This will allow you to take advantage of any available features offered at Penstro!
+
+This email confirmation is required for security purposes. For extra security, you may be required to confirm certain actions using this email, including any requests to change this linked email address.
+
+The link below expires after 24 hours.
+Confirm your account: <link>
+					]]>
+    		</value>
+    	</property>
+    </bean>
+    
+    <bean id="passwordResetDetails" class="com.py.py.service.mail.EmailDetailsImpl">
+    	<property name="from" ref="fromString" />
+    	<property name="replyTo" ref="replyToString" />
+    	<property name="subject" value="Password Reset" />
+    	<property name="link" value="${py.web.host}${py.mail.link.passwordReset}" />
+    	<property name="text">
+    		<value>
+    			<![CDATA[
+Hello <username>,
+A user has requested a password reset belonging to this email.
+
+In order to reset your login information, the form linked below must be filled out and submitted.
+
+If you did not request a password reset, please disregard this message.
+
+The link below expires after 24 hours.
+Reset login information: <link>
+					]]>
+    		</value>
+    	</property>
+    </bean>
+    
+    <bean id="changeEmailDetails" class="com.py.py.service.mail.EmailDetailsImpl">
+    	<property name="from" ref="fromString" />
+    	<property name="replyTo" ref="replyToString" />
+    	<property name="subject" value="Change Registered Penstro Email" />
+    	<property name="link" value="${py.web.host}${py.mail.link.changeEmail}" />
+    	<property name="text">
+    		<value>
+    			<![CDATA[
+Hello <username>,
+You have requested an email change.
+
+In order to complete this process, the details must be confirmed using the link below.
+
+The link below expires after 24 hours.
+Confirm: <link>
+					]]>
+    		</value>
+    	</property>
+    </bean>
+    
+    <bean id="offerDetails" class="com.py.py.service.mail.EmailDetailsImpl">
+    	<property name="from" ref="fromString" />
+    	<property name="replyTo" ref="replyToString" />
+    	<property name="subject" value="A user has offered to back you on Penstro" />
+    	<property name="link" value="${py.web.host}${py.mail.link.offer}" />
+    	<property name="text">
+    		<value>
+    			<![CDATA[
+Hello,
+A user has offered to back the owner of this email address at Penstro! 
+If you do not have an account associated with this email, you are welcome to join Penstro and accept this offer!
+
+You may accept or deny this offer or any other offers through your account at Penstro.
+
+Offers: <link>
+					]]>
+    		</value>
+    	</property>
+    </bean>
+    
+    <bean id="deleteDetails" class="com.py.py.service.mail.EmailDetailsImpl">
+    	<property name="from" ref="fromString" />
+    	<property name="replyTo" ref="replyToString" />
+    	<property name="subject" value="Delete account" />
+    	<property name="link" value="${py.web.host}${py.mail.link.delete}" />
+    	<property name="text">
+    		<value>
+    			<![CDATA[
+Hello <username>,
+You have requested to delete your account. Please rethink this! This will have a permanent effect if it is not cancelled.
+
+In order to complete this process, you must confirm the deletion using the link below.
+
+The link below expires after 24 hours.
+Confirm: <link>
+					]]>
+    		</value>
+    	</property>
+    </bean>
+    
+    <bean id="changePaymentDetails" class="com.py.py.service.mail.EmailDetailsImpl">
+    	<property name="from" ref="fromString" />
+    	<property name="replyTo" ref="replyToString" />
+    	<property name="subject" value="Change payment information" />
+    	<property name="link" value="${py.web.host}${py.mail.link.changePayment}" />
+    	<property name="text">
+    		<value>
+    			<![CDATA[
+Hello <username>,
+You have requested to change your payment information.
+
+In order to complete this process, the details must be confirmed using the link below.
+
+The link below expires after 24 hours.
+Confirm: <link>
+					]]>
+    		</value>
+    	</property>
+    </bean>
+    
+    <bean id="emailService" class="com.py.py.service.impl.EmailServiceImpl">
+    	<property name="confirmationDetails" ref="confirmationDetails" />
+    	<property name="passwordResetDetails" ref="passwordResetDetails" />
+    	<property name="changeEmailDetails" ref="changeEmailDetails" />
+    	<property name="offerDetails" ref="offerDetails" />
+    	<property name="deleteDetails" ref="deleteDetails" />
+    	<property name="changePaymentDetails" ref="changePaymentDetails" />
+    	<property name="emailsPageSize" value="${py.mail.emailsPageSize}" />
+    </bean>
+    
+    <beans profile="dev">
+	    <bean id="emailClientManager" class="com.py.py.service.mail.TestingEmailClientManager">
+    		<property name="testingToken" value="testingtoken" />
+	    </bean>
+    </beans>
+    
+    <beans profile="production">
+    	<bean id="emailClientManager" class="com.py.py.service.mail.ProductionEmailClientManager">
+    	</bean>
+    </beans>
+</beans>

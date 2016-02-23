@@ -1,0 +1,133 @@
+from PyConstants import Paths
+from PyConstants import Codes
+from PyConstants import CacheTimes
+from PyBaseTest import BaseTest
+from PyRequest import PyRequest
+import time
+
+class User(BaseTest):
+    
+    def runTests(self):
+        print("Running user tests")
+        self.testUsers()
+        self.testUsersId()
+        self.testUsersCurrent()
+        self.testUserDelete()
+        self.testUserProfile()
+        self.testUserAppreciationResponse()
+        #self.testLocations()
+    
+    def testUsers(self):
+        expected = self.unauthed.getPageResponse()
+        self.unauthed.expectResponse(Paths.USERS, PyRequest.GET, None, expected)
+        self.authed.expectResponse(Paths.USERS, PyRequest.GET, None, expected)
+        
+    def testUsersId(self):
+        expected = {PyRequest.CODE:Codes.SUCCESS}
+        expectedNotFound = self.unauthed.getOnlyCodeResponse(Codes.NOT_FOUND)
+        expectedInvalid = self.unauthed.getOnlyCodeResponse(Codes.INVALID)
+        
+        self.unauthed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expected, self.username)
+        self.authed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expected, self.username)
+        
+        self.unauthed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedNotFound, "failnottaken")
+        self.authed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedNotFound, "failnottaken")
+        
+        self.unauthed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedInvalid, "-_-_")
+        self.authed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedInvalid, "-_-_")
+        self.unauthed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedInvalid, "waytoolongandsuchforanyusername12345678901234567890")
+        self.authed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedInvalid, "waytoolongandsuchforanyusername12345678901234567890")
+        
+    def testUsersCurrent(self):
+        expected = {PyRequest.CODE:Codes.SUCCESS}
+        expectedFailure = {PyRequest.CODE:Codes.DENIED}
+        self.unauthed.expectResponse(Paths.USERS_CURRENT, PyRequest.GET, None, expectedFailure)
+        self.authed.expectResponse(Paths.USERS_CURRENT, PyRequest.GET, None, expected)
+
+    def testUserDelete(self):
+        self.unauthed.expectResponse(Paths.USERS_DELETE_SEND, PyRequest.POST, None, self.expectedDenied)
+        self.authed.expectResponse(Paths.USERS_DELETE_SEND, PyRequest.POST, None, self.expectedSuccess)
+        
+        # wait until the email would be sent
+        # testing value is much less
+        # time.sleep(60*3)
+        time.sleep(20)
+        
+        self.authed.expectResponse(Paths.USERS_DELETE, PyRequest.DELETE, None, self.expectedInvalid, None, "emailToken=fakeToken")
+        self.unauthed.expectResponse(Paths.USERS_DELETE, PyRequest.DELETE, None, self.expectedDenied, None, "emailToken=testingtoken")
+        self.authed.expectResponse(Paths.USERS_DELETE, PyRequest.DELETE, None, self.expectedSuccess, None, "emailToken=testingtoken")
+        self.authed.expectResponse(Paths.USERS_DELETE, PyRequest.DELETE, None, self.expectedInvalid, None, "emailToken=testingtoken")
+
+        self.unauthed.expectResponse(Paths.USERS_DELETE, PyRequest.POST, None, self.expectedDenied)
+        self.authed.expectResponse(Paths.USERS_DELETE, PyRequest.POST, None, self.expectedSuccess)
+        self.authed.expectResponse(Paths.USERS_DELETE, PyRequest.POST, None, self.expectedNotAllowed)
+        
+    def testUserProfile(self):
+        expectedNull = self.unauthed.getDTOResponse({'warning':[True, False]})
+        profile = {'description':'This is a test description!', 'warning':True}
+        fullProfile = {'description':'This is a test description!', 'warning':True}
+        warningProfile = profile
+        expectedWarningProfile = self.unauthed.getDTOResponse(warningProfile)
+        expectedProfile = self.unauthed.getDTOResponse(profile)
+        expectedFullProfile = self.unauthed.getDTOResponse(fullProfile)
+        self.unauthed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedNull, self.username)
+        self.authed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedNull, self.username)
+        self.unauthed.expectResponse(Paths.PROFILE, PyRequest.GET, None, self.expectedDenied)
+        self.authed.expectResponse(Paths.PROFILE, PyRequest.GET, None, expectedNull)
+        
+        self.unauthed.expectResponse(Paths.PROFILE, PyRequest.POST, profile, self.expectedDenied)
+        self.authed.expectResponse(Paths.PROFILE, PyRequest.POST, profile, self.expectedSuccess)
+        self.authed.expectResponse(Paths.PROFILE, PyRequest.GET, None, expectedProfile, self.username)
+
+        time.sleep(CacheTimes.USER_INFO)
+        data = self.authed.expectResponse(Paths.USERS_ID, PyRequest.GET, None, expectedWarningProfile, self.username)
+        if not ('dto' in data and 'description' in data['dto'] and data['dto']['description'] != profile['description']):
+            self.error(data, expectedWarningProfile, PyRequest.GET, Paths.USERS_ID, None, self.username, None, 'Warning should obfuscate the description with warning content')
+        
+    def testUserAppreciationResponse(self):
+        expectedNull = self.unauthed.getDTOResponse({'appreciationResponseWarning':[True, False]})
+        r = 'This is a test appreciation response!'
+        appreciationResponse = {'appreciationResponse': r, 'appreciationResponseWarning':True}
+        expected = self.unauthed.getDTOResponse(appreciationResponse)
+        self.unauthed.expectResponse(Paths.USERS_APPRECIATION_RESPONSE, PyRequest.GET, None, self.expectedDenied, self.username)
+        self.authed.expectResponse(Paths.USERS_APPRECIATION_RESPONSE, PyRequest.GET, None, self.expectedNotAllowed, self.username)
+        self.unauthed.expectResponse(Paths.APPRECIATION_RESPONSE, PyRequest.GET, None, self.expectedDenied)
+        self.authed.expectResponse(Paths.APPRECIATION_RESPONSE, PyRequest.GET, None, expectedNull)
+        
+        self.unauthed.expectResponse(Paths.APPRECIATION_RESPONSE, PyRequest.POST, appreciationResponse, self.expectedDenied)
+        self.authed.expectResponse(Paths.APPRECIATION_RESPONSE, PyRequest.POST, appreciationResponse, self.expectedSuccess)
+        self.authed.expectResponse(Paths.APPRECIATION_RESPONSE, PyRequest.GET, None, expected, self.username)
+        
+    def testLocations(self):
+        savedLocations = []
+        #expected = self.unauthed.getDTOResponse({'savedLocations':savedLocations})
+        #self.authed.expectResponse(Paths.USERS_CURRENT, PyRequest.GET, None, expected)
+        
+        name1 = 'location Test'
+        name2 = 'locationTest2'
+        
+        body = {'name':name1}
+        
+        #self.unauthed.expectResponse(Paths.LOCATIONS, PyRequest.POST, body, self.expectedDenied)
+        #self.authed.expectResponse(Paths.LOCATIONS, PyRequest.POST, body, self.expectedSuccess)
+        
+        savedLocations = [{'name':name1,'ip':self.unauthed.insertExists()}]
+        expected = self.unauthed.getDTOResponse({'savedLocations':savedLocations})
+        #self.authed.expectResponse(Paths.USERS_CURRENT, PyRequest.GET, None, expected)
+        
+        body = {'name':name2}
+        #self.authed.expectResponse(Paths.LOCATIONS, PyRequest.POST, body, self.expectedSuccess)
+        
+        savedLocations = [{'name':name1,'ip':self.unauthed.insertExists()}, 
+                          {'name':name2,'ip':self.unauthed.insertExists()}]
+        #expected = self.unauthed.getDTOResponse({'savedLocations':savedLocations})
+        #self.authed.expectResponse(Paths.USERS_CURRENT, PyRequest.GET, None, expected)
+        
+        body = {'name':name1}
+        
+        #self.unauthed.expectResponse(Paths.LOCATIONS_REMOVE, PyRequest.POST, body, self.expectedDenied)
+        #self.authed.expectResponse(Paths.LOCATIONS_REMOVE, PyRequest.POST, body, self.expectedSuccess)
+        
+        savedLocations = {'name':name2,'ip':self.unauthed.insertExists()}
+        #expected = self.unauthed.getDTOResponse({'savedLocations':savedLocations})
+        #self.authed.expectResponse(Paths.USERS_CURRENT, PyRequest.GET, None, expected)

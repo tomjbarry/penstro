@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	<util:properties id="paypalProperties" 
+		location="file://${penstro.config.location}/paypal_config.properties" />
+
+	<bean id="feePaymentId" class="java.lang.String" >
+		<constructor-arg value="${py.payment.fee.EmailAddress}" />
+	</bean>
+	
+	<bean id="redirectPaymentUrl" class="java.lang.String" >
+		<constructor-arg value="${py.payment.adaptivePayment.redirectPaymentUrl}" />
+	</bean>
+	
+	<bean id="ipnUrl" class="java.lang.String" >
+		<constructor-arg value="${py.api.host}/payment/notification" />
+	</bean>
+	
+	<bean id="ipnConfig" class="java.util.HashMap" scope="prototype">
+		<constructor-arg>
+			<map key-type="java.lang.String" value-type="java.lang.String">
+				<entry key="mode" value="sandbox"/>
+				<entry key="http.ConnectionTimeOut" value="5000"/>
+				<entry key="http.Retry" value="2"/>
+				<entry key="http.ReadTimeOut" value="30000"/>
+				<entry key="http.MaxConnection" value="100"/>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="appName" class="java.lang.String" >
+		<constructor-arg value="Penstro" />
+	</bean>
+	
+	<bean id="purchaseMemo" class="java.lang.String" >
+		<constructor-arg value="Penstro Pennies purchase" />
+	</bean>
+	
+	<bean id="appreciationMemo" class="java.lang.String" >
+		<constructor-arg value="Penstro Tip to " />
+	</bean>
+	
+	<bean id="appreciationMemoAlt" class="java.lang.String" >
+		<constructor-arg value="Penstro Tip" />
+	</bean>
+	
+	<bean id="successUrl" class="java.lang.String" >
+		<constructor-arg value="${py.web.host}" />
+	</bean>
+	
+	<bean id="cancelUrl" class="java.lang.String" >
+		<constructor-arg value="${py.web.host}" />
+	</bean>
+
+    <bean id="paymentService" class="com.py.py.service.impl.PaymentServiceImpl" >
+		<constructor-arg index="0" ref="paypalProperties" />
+		<constructor-arg index="1" ref="redirectPaymentUrl" />
+		<constructor-arg index="2" ref="feePaymentId" />
+		<constructor-arg index="3" ref="ipnUrl" />
+		<constructor-arg index="4" ref="ipnConfig" />
+		<constructor-arg index="5" ref="appName" />
+		<constructor-arg index="6" ref="purchaseMemo" />
+		<constructor-arg index="7" ref="appreciationMemo" />
+		<constructor-arg index="8" ref="appreciationMemoAlt" />
+		<constructor-arg index="9" ref="successUrl" />
+		<constructor-arg index="10" ref="cancelUrl" />
+    </bean>
+    
+</beans>

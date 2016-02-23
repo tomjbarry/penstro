@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+    <bean id="userService" class="com.py.py.service.impl.UserServiceImpl" />
+    <bean id="postingService" class="com.py.py.service.impl.PostingServiceImpl" />
+    <bean id="eventService" class="com.py.py.service.impl.EventServiceImpl" />
+    <bean id="financeService" class="com.py.py.service.impl.FinanceServiceImpl" />
+    <bean id="commentService" class="com.py.py.service.impl.CommentServiceImpl" />
+    <bean id="messageService" class="com.py.py.service.impl.MessageServiceImpl" />
+    <bean id="tagService" class="com.py.py.service.impl.TagServiceImpl" />
+    <!-- <bean id="escrowService" class="com.py.py.service.impl.EscrowServiceImpl" />-->
+    <bean id="escrowService" class="com.py.py.service.impl.EscrowServiceDisabledImpl" />
+    <bean id="followService" class="com.py.py.service.impl.FollowServiceImpl" />
+    <bean id="feedbackService" class="com.py.py.service.impl.FeedbackServiceImpl" />
+    <bean id="statisticsService" class="com.py.py.service.impl.StatisticsServiceImpl" />
+    <bean id="flagService" class="com.py.py.service.impl.FlagServiceImpl" />
+    <!-- Email service defined in mail-context -->
+    
+    <beans profile="MASTER">
+   		<bean id="adminService" class="com.py.py.service.impl.AdminServiceImpl" />
+    </beans>
+</beans>

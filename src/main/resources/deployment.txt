@@ -1,0 +1,12 @@
+set cacheing (net.sf.ehcache.disabled=true in catalina.properties or -Dnet.sf.ehcache.disabled=true as vm arg) (alternative: false)
+set profile (spring.profiles.active=MASTER,production in catalina.properties or -Dspring.profiles.active=MASTER,production) (alternative: SLAVE,dev)
+set config files location
+update front end deployment locations in config files
+ensure config files are being loaded from alternate folders, not from project
+update paypal locations in paypal config
+update logging permissions if needed to ensure logs are correctly created and written to
+ensure mongod is version 3.0.2
+follow instructions for HTTPS deployment
+
+MASTER only
+update cron jobs

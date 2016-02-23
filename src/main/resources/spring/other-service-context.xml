@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+          
+    <!-- This file is intended so that these services can be defined manually in the test config -->
+    
+    <bean id="roleService" class="com.py.py.service.impl.RoleServiceImpl" init-method="populateRoles">
+    	<property name="propertiesHolder">
+    		<util:properties id="rolemanagementConfiguration" location="classpath:/rolemanagement.config" />
+    	</property>
+    	<property name="rolePropertyFilter" value="py.role.role" />
+    	<property name="overrideRolePropertyFilter" value="py.role.overrideRole" />
+    	<property name="rankRolePropertyFilter" value="py.role.rank.role" />
+    	<property name="rankOverrideRolePropertyFilter" value="py.role.rank.overrideRole" />
+    </bean>
+    
+    <bean id="restrictedService" class="com.py.py.service.impl.RestrictedServiceImpl" init-method="populateRestricted">
+    	<property name="useDatabase" value="false" />
+    	<property name="maxSize" value="500" />
+    </bean>
+    
+</beans>

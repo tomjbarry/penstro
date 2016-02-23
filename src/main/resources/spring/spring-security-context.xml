@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:security="http://www.springframework.org/schema/security"
+          xmlns:util="http://www.springframework.org/schema/util"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	<security:http security="none" pattern="/resources/**" />
+	<!-- do not use!
+	<security:http security="none" pattern="/login/**" />
+	-->
+	<security:http 
+		use-expressions="true" 
+		entry-point-ref="entryPoint" 
+		create-session="stateless" 
+		>
+		<!-- Not used due to custom authentication filter allowing json -->
+		<!--
+		<security:form-login
+			default-target-url="/login/success"
+			authentication-failure-handler-ref="customAuthenticationFailureHandler"
+			login-page="/login"
+			always-use-default-target="true"
+			login-processing-url="/login"
+			password-parameter="password"
+			username-parameter="username"
+		/>
+		-->
+		<!-- refers to admin permission, must be present for every 
+			admin role as a minimum -->
+		<security:intercept-url pattern="/admin/**" access="hasAnyAuthority('ADMIN')" />
+		<security:intercept-url pattern="/**" access="permitAll" />
+		<security:access-denied-handler error-page="/denied" />
+		<security:custom-filter 
+			ref="customUsernamePasswordAuthenticationFilter" 
+			position="FORM_LOGIN_FILTER" />
+		<security:custom-filter
+			ref="authenticationFilter"
+			position="PRE_AUTH_FILTER"
+			/>
+		<security:anonymous enabled="false" />
+		<security:custom-filter
+			ref="anonymousFilter"
+			position="ANONYMOUS_FILTER"
+			/>
+		<security:custom-filter
+			ref="logoutFilter"
+			after="PRE_AUTH_FILTER"
+			/>
+		<security:custom-filter 
+			ref="corsFilter"
+			before="CHANNEL_FILTER" />
+		<security:headers>
+			<security:frame-options disabled="true" />
+		</security:headers>
+		<security:csrf disabled="true" />
+	</security:http>
+	
+	<security:global-method-security 
+		secured-annotations="enabled"
+		pre-post-annotations="enabled" />
+	
+	
+	<security:authentication-manager alias="authenticationManager" >
+		<security:authentication-provider ref="authenticationProvider" />
+	</security:authentication-manager>
+	
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" >
+		<!-- sets the bcrypt strength -->
+		<constructor-arg value="10"/>
+	</bean>
+	
+	<bean id="authenticationProvider"
+		class="com.py.py.security.LimitingDaoAuthenticationProvider" >
+		<property name="userDetailsService" ref="authenticationService" />
+		<property name="passwordEncoder" ref="passwordEncoder" />
+		<property name="preAuthenticationChecks" ref="customPreLoginChecks" />
+		<property name="postAuthenticationChecks" ref="customPostLoginChecks" />
+	</bean>
+	
+	<bean id="customAuthenticationSuccessHandler"
+		class="com.py.py.security.CustomAuthenticationSuccessHandler" />
+	
+	<bean id="customAuthenticationFailureHandler"
+		class="com.py.py.security.CustomAuthenticationFailureHandler" >
+		<property name="defaultFailureUrl" value="/denied" />
+		<property name="theftFailureUrl" value="/theft" />
+		<property name="expiredFailureUrl" value="/expired" />
+		<property name="lockedFailureUrl" value="/locked" />
+	</bean>
+		
+	<bean id="customLoginSuccessHandler" class="com.py.py.security.CustomLoginSuccessHandler" >
+		<property name="defaultTargetUrl" value="/denied" />
+	</bean>
+	
+	<bean id="customLoginFailureHandler"
+		class="com.py.py.security.CustomLoginFailureHandler">
+		<property name="defaultFailureUrl" value="/denied"/>
+		<property name="lockedFailureUrl" value="/locked"/>
+		<property name="loginLockedFailureUrl" value="/loginLocked" />
+		<property name="parameterFailureUrl" value="/invalid"/>
+	</bean>
+	
+	<bean id="customPreLoginChecks"
+		class="com.py.py.security.CustomPreLoginChecks"/>
+	
+	<bean id="customPostLoginChecks"
+		class="com.py.py.security.CustomPostLoginChecks" />
+
+	<bean id="customUsernamePasswordAuthenticationFilter"
+			class="com.py.py.security.CustomUsernamePasswordAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationSuccessHandler" ref="customLoginSuccessHandler" />
+		<property name="authenticationFailureHandler" ref="customLoginFailureHandler" />
+		<property name="filterProcessesUrl" value="/login" />
+		<property name="usernameParameter" value="username" />
+		<property name="passwordParameter" value="password" />
+	</bean>
+	
+	<bean id="entryPoint" 
+		class="com.py.py.security.ForwardEntryPoint">
+		<property name="defaultForwardUrl" value="/denied" />
+	</bean>
+	
+	<bean id="corsFilter"
+		class="com.py.py.security.CustomCORSFilter">
+		<property name="accessControlAllowOrigin" value="*" />
+		<property name="accessControlAllowMethods" value="GET, PUT, POST, OPTIONS, DELETE" />
+		<property name="accessControlMaxAge" value="3600" />
+		<property name="accessControlAllowHeadersList" ref="headersList" />
+	</bean>
+	
+	<util:list id="headersList" value-type="java.lang.String">
+		<ref bean="headerToken" />
+		<value>Content-Type</value>
+		<ref bean="anticacheHeader" />
+	</util:list>
+	
+	<bean id="anonymousFilter" class="com.py.py.security.CustomAnonymousAuthenticationFilter">
+		<constructor-arg index="0" ref="key" />
+		<constructor-arg index="1" value="anonymous" />
+    	<property name="propertiesHolder">
+    		<util:properties id="rolemanagementConfiguration" location="classpath:/rolemanagement.config" />
+    	</property>
+    	<property name="anonymousProperty" value="py.role.role.anonymous" />
+	</bean>
+	
+	<bean id="authenticationFilter" class="com.py.py.security.CustomAuthenticationFilter">
+		<constructor-arg index="0" ref="authenticationService" />
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationSuccessHandler" ref="customAuthenticationSuccessHandler" />
+		<property name="authenticationFailureHandler" ref="customAuthenticationFailureHandler" />
+	</bean>
+	
+	<bean id="authenticationRepository"
+		class="com.py.py.security.AuthenticationRepositoryImpl" />
+		
+	<bean id="authenticationService" class="com.py.py.service.impl.AuthenticationServiceImpl">
+		<constructor-arg index="0" ref="key" />
+		<constructor-arg index="1" ref="authenticationRepository" />
+		<property name="securityTokenHeader" ref="headerToken" />
+	</bean>
+	<bean id="logoutFilter" class="com.py.py.security.CustomLogoutFilter" >
+		<constructor-arg index="0" value="/logout/success" />
+		<constructor-arg index="1" value="/logout/failure" />
+		<constructor-arg index="2">
+			<list>
+				<ref bean="authenticationService" />
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/logout" />
+	</bean>
+	<bean id="key" class="java.lang.String">
+		<constructor-arg value="todo add hash here" />
+	</bean>
+	
+	<bean id="headerToken" class="java.lang.String">
+		<constructor-arg value="Authentication-Token" />
+	</bean>
+	
+	<bean id="anticacheHeader" class="java.lang.String">
+		<constructor-arg value="AC-Timestamp" />
+	</bean>
+
+</beans>

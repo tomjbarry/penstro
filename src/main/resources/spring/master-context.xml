@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans profile="MASTER"
+		  xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+		  xmlns:task="http://www.springframework.org/schema/task"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd
+          http://www.springframework.org/schema/task
+          http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+    
+    <!-- Admin Service in services for testing purposes -->
+   	
+   	<!-- Startup in utils -->
+    
+   	<bean id="scheduledJobs" class="com.py.py.service.util.ScheduledJobs" />
+    
+    <task:scheduled-tasks>
+    	<task:scheduled ref="scheduledJobs" method="renameUsers"
+    		fixed-delay="${py.jobs.delay.rename.start}" />
+    	<task:scheduled ref="scheduledJobs" method="completeRenameUsers"
+    		fixed-delay="${py.jobs.delay.rename.complete}" />
+    	<task:scheduled ref="scheduledJobs" method="deleteUsers"
+    		fixed-delay="${py.jobs.delay.delete.start}" />
+    	<task:scheduled ref="scheduledJobs" method="decrementFlags"
+    		fixed-delay="${py.jobs.delay.flags.decrement}" />
+    	<task:scheduled ref="scheduledJobs" method="removeFlags"
+    		fixed-delay="${py.jobs.delay.flags.remove}" />
+    	<task:scheduled ref="scheduledJobs" method="completeDeleteUsers"
+    		fixed-delay="${py.jobs.delay.delete.complete}" />
+    	<task:scheduled ref="scheduledJobs" method="markPostingsArchived"
+    		fixed-delay="${py.jobs.delay.postings.archive}" />
+    	<task:scheduled ref="scheduledJobs" method="markCommentsArchived"
+    		fixed-delay="${py.jobs.delay.comments.archive}" />
+    	<task:scheduled ref="scheduledJobs" method="updatePostingTags"
+    		fixed-delay="${py.jobs.delay.postings.tags.sort}" />
+    	<task:scheduled ref="scheduledJobs" method="checkCompletedPayments"
+    		fixed-delay="${py.jobs.delay.payment.checkCompleted}" />
+    	<task:scheduled ref="scheduledJobs" method="removePayments"
+    		fixed-delay="${py.jobs.delay.payment.remove}" />
+    	<task:scheduled ref="scheduledJobs" method="checkDeals"
+    		fixed-delay="${py.jobs.delay.finance.deal.check}" />
+    	<task:scheduled ref="scheduledJobs" method="removeDeals"
+    		fixed-delay="${py.jobs.delay.finance.deal.remove}" />
+    	<task:scheduled ref="scheduledJobs" method="checkAdminActions"
+    		fixed-delay="${py.jobs.delay.admin.action.check}" />
+    	<task:scheduled ref="scheduledJobs" method="removeAdminActions"
+    		fixed-delay="${py.jobs.delay.admin.action.remove}" />
+    	<task:scheduled ref="scheduledJobs" method="removeInvalidEscrows"
+    		fixed-delay="${py.jobs.delay.escrow.invalid.remove}" />
+    	<task:scheduled ref="scheduledJobs" method="refundExpiredEscrowOffers"
+    		fixed-delay="${py.jobs.delay.escrow.offer.refund}" />
+    	<task:scheduled ref="scheduledJobs" method="removeExpiredCorrespondences"
+    		fixed-delay="${py.jobs.delay.correspondence.remove}" />
+    	<task:scheduled ref="scheduledJobs" method="runEmailService" 
+    		fixed-delay="${py.jobs.delay.email.run}"/>
+    	<task:scheduled ref="scheduledJobs" method="cleanupEmailServiceCompleted" 
+    		fixed-delay="${py.jobs.delay.email.completed}"/>
+    	<task:scheduled ref="scheduledJobs" method="cleanupEmailServiceErrors" 
+    		fixed-delay="${py.jobs.delay.email.errors}"/>
+    	<task:scheduled ref="scheduledJobs" method="checkInvalidEmails"
+    		fixed-delay="${py.jobs.delay.email.invalid}"/>
+    	<task:scheduled ref="scheduledJobs" method="cleanupAggregations" 
+    		fixed-delay="${py.jobs.delay.aggregate.day}"/>
+    	<task:scheduled ref="scheduledJobs" method="updateUsersTotals"
+    		fixed-delay="${py.jobs.delay.aggregate.totals}"/>
+    	<task:scheduled ref="scheduledJobs" method="updateTagsTotals"
+    		fixed-delay="${py.jobs.delay.aggregate.totals}"/>
+    	<task:scheduled ref="scheduledJobs" method="updatePostingsTotals"
+    		fixed-delay="${py.jobs.delay.aggregate.totals}"/>
+    	<task:scheduled ref="scheduledJobs" method="updateCommentsTotals"
+    		fixed-delay="${py.jobs.delay.aggregate.totals}"/>
+    	<task:scheduled ref="scheduledJobs" method="aggregateUsersHour" 
+    		fixed-delay="${py.jobs.delay.aggregate.hour}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateUsersDay" 
+    		fixed-delay="${py.jobs.delay.aggregate.day}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateUsersMonth" 
+    		fixed-delay="${py.jobs.delay.aggregate.month}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateUsersYear" 
+    		fixed-delay="${py.jobs.delay.aggregate.year}"/>
+    	<task:scheduled ref="scheduledJobs" method="aggregateTagsHour" 
+    		fixed-delay="${py.jobs.delay.aggregate.hour}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateTagsDay" 
+    		fixed-delay="${py.jobs.delay.aggregate.day}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateTagsMonth" 
+    		fixed-delay="${py.jobs.delay.aggregate.month}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateTagsYear" 
+    		fixed-delay="${py.jobs.delay.aggregate.year}"/>
+    	<task:scheduled ref="scheduledJobs" method="aggregatePostingsHour" 
+    		fixed-delay="${py.jobs.delay.aggregate.hour}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregatePostingsDay" 
+    		fixed-delay="${py.jobs.delay.aggregate.day}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregatePostingsMonth" 
+    		fixed-delay="${py.jobs.delay.aggregate.month}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregatePostingsYear" 
+    		fixed-delay="${py.jobs.delay.aggregate.year}"/>
+    	<task:scheduled ref="scheduledJobs" method="aggregateCommentsHour" 
+    		fixed-delay="${py.jobs.delay.aggregate.hour}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateCommentsDay" 
+    		fixed-delay="${py.jobs.delay.aggregate.day}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateCommentsMonth" 
+    		fixed-delay="${py.jobs.delay.aggregate.month}"/>
+   		<task:scheduled ref="scheduledJobs" method="aggregateCommentsYear" 
+    		fixed-delay="${py.jobs.delay.aggregate.year}"/>
+    </task:scheduled-tasks>
+</beans>

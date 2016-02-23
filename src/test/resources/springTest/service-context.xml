@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 	  default-autowire-candidates="*Service,*Factory,*Aggregator,*Sender,*Repository,*Encoder,*Manager,*Jobs"
+		  xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-3.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+    
+    <!-- Redefine some services -->
+    
+    <bean id="roleService" class="com.py.py.service.impl.RoleServiceImpl" init-method="populateRoles">
+    	<property name="propertiesHolder">
+    		<util:properties id="rolemanagementConfiguration" location="classpath:rolemanagement.config" />
+    	</property>
+    	<property name="rolePropertyFilter" value="py.role.role" />
+    	<property name="overrideRolePropertyFilter" value="py.role.overrideRole" />
+    	<property name="rankRolePropertyFilter" value="py.role.rank.role" />
+    	<property name="rankOverrideRolePropertyFilter" value="py.role.rank.overrideRole" />
+    </bean>
+    
+    <bean id="restrictedService" class="com.py.py.service.impl.RestrictedServiceImpl">
+    	<property name="useDatabase" value="true" />
+    	<property name="maxSize" value="500" />
+    </bean>
+    
+    <!-- Beans here are order specific -->
+    
+    <bean id="mockDefaultsFactory" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.util.DefaultsFactory" />
+    </bean>
+    
+    <bean id="mockCacheManager" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="org.springframework.cache.CacheManager" />
+    </bean>
+    
+	<!-- AUTHENTICATION SPECIFIC -->
+	<bean id="mockAuthenticationRepository" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+		<constructor-arg value="com.py.py.security.AuthenticationRepositoryImpl" />
+	</bean>
+	
+	<bean id="mockAuthenticationManager" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+		<constructor-arg value="org.springframework.security.authentication.AuthenticationManager" />
+	</bean>
+	
+	<bean id="passwordEncoder" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+		<constructor-arg value="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	</bean>
+	
+	<bean id="mockAuthenticationService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+		<constructor-arg value="com.py.py.service.AuthenticationService" />
+	</bean>
+	
+	<!-- Dont forget to change default autowire candidates -->
+	<bean id="mockGoogleManager" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+		<constructor-arg value="com.py.py.service.google.GoogleManager" />
+	</bean>
+	<bean id="mockCredentialsManager" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+		<constructor-arg value="com.py.py.service.aws.CredentialsManager" />
+	</bean>
+	<bean id="mockSQSManager" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+		<constructor-arg value="com.py.py.service.aws.SQSManager" />
+	</bean>
+    <bean id="mockMailSender" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="org.springframework.mail.MailSender" />
+    </bean>
+    <bean id="mockClientManager" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.mail.TestingEmailClientManager" />
+    </bean>
+    <!-- 
+    <bean id="startupJobs" class="com.py.py.service.util.StartupJobs" />
+	-->
+	<bean id="mockBaseAggregator" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.base.BaseAggregator" />
+    </bean>
+
+    <bean id="mockUserService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.UserService" />
+    </bean>
+    <bean id="mockPostingService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.PostingService" />
+    </bean>
+    <bean id="mockEventService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.EventService" />
+    </bean>
+    <bean id="mockFinanceService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.FinanceService" />
+    </bean>
+    <bean id="mockCommentService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.CommentService" />
+    </bean>
+    <bean id="mockMessageService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.MessageService" />
+    </bean>
+    <bean id="mockTagService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.TagService" />
+    </bean>
+    <bean id="mockEscrowService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.EscrowService" />
+    </bean>
+    <bean id="mockFollowService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.FollowService" />
+    </bean>
+    <bean id="mockFeedbackService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.FeedbackService" />
+    </bean>
+    <bean id="mockAdminService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.AdminService" />
+    </bean>
+    <bean id="mockEmailService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.EmailService" />
+    </bean>
+    <bean id="mockRoleService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.RoleService" />
+    </bean>
+    <bean id="mockRestrictedService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.RestrictedService" />
+    </bean>
+    <bean id="mockStatisticsService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.StatisticsService" />
+    </bean>
+    <bean id="mockFlagService" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.FlagService" />
+    </bean>
+	
+    <!-- Must create a base aggregator purely for testing purposes -->
+    <bean id="baseAggregator" class="com.py.py.service.base.BaseAggregator" />
+	<!-- Not using the bean from spring-security-context -->
+	<bean id="authenticationService" class="com.py.py.service.impl.AuthenticationServiceImpl" >
+		<constructor-arg index="0" value="hashvalue" />
+		<constructor-arg index="1" ref="mockAuthenticationRepository" />
+		<property name="securityTokenHeader" value="Authentication-Token" />
+	</bean>
+    <bean id="mockStartupJobs" class="org.mockito.Mockito" factory-method="mock" primary="true" >
+    	<constructor-arg value="com.py.py.service.util.StartupJobs" />
+    </bean>
+    
+    <bean id="sampleEmailDetails" class="com.py.py.service.mail.EmailDetailsImpl">
+    	<property name="from" value="fromString" />
+    	<property name="replyTo" value="replyToString" />
+    	<property name="subject" value="Change payment information" />
+    	<property name="link" value="link" />
+    	<property name="text" value="text" />
+    </bean>
+    
+    <bean id="emailService" class="com.py.py.service.impl.EmailServiceImpl">
+    	<property name="confirmationDetails" ref="sampleEmailDetails" />
+    	<property name="passwordResetDetails" ref="sampleEmailDetails" />
+    	<property name="changeEmailDetails" ref="sampleEmailDetails" />
+    	<property name="offerDetails" ref="sampleEmailDetails" />
+    	<property name="deleteDetails" ref="sampleEmailDetails" />
+    	<property name="changePaymentDetails" ref="sampleEmailDetails" />
+    	<property name="emailsPageSize" value="5" />
+    </bean>
+</beans>

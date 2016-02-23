@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+		  xmlns:task="http://www.springframework.org/schema/task"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd
+          http://www.springframework.org/schema/task
+          http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+    
+    <bean id="defaultsFactory" 
+    	class="com.py.py.service.util.DefaultsFactory" init-method="populateDefaults" />
+    
+    <beans profile="SLAVE">
+    	<bean id="startupJobs" class="com.py.py.service.util.StartupJobs" init-method="finishStartup">
+	    </bean>
+    </beans>
+    
+    <beans profile="MASTER">
+	    <bean id="adminUser" class="com.py.py.dto.in.RegisterUserDTO">
+	    	<property name="username" value="${py.credentials.admin.username}" />
+	    	<property name="password" value="${py.credentials.admin.password}" />
+	    	<property name="email" value="${py.credentials.admin.email}" />
+	    </bean>
+	    	
+	    <bean id="defaultUser" class="com.py.py.dto.in.RegisterUserDTO">
+	    	<property name="username" value="${py.credentials.defaultUser.username}" />
+	    	<property name="password" value="${py.credentials.defaultUser.password}" />
+	    	<property name="email" value="${py.credentials.defaultUser.email}" />
+	    </bean>
+	    
+	    <bean id="startupJobs" class="com.py.py.service.util.StartupJobs" init-method="startup">
+	    	<property name="adminRoleList">
+	    		<list>
+	    			<value>admin</value>
+	    		</list>
+	    	</property>
+	    	<property name="removeOverrideRoleList">
+	    		<list>
+	    			<value>unpaid</value>
+	    			<value>unconfirmed</value>
+	    			<value>unlinked</value>
+	    			<value>unaccepted</value>
+	    		</list>
+	    	</property>
+	    	<property name="adminUsers">
+	    		<list>
+	    			<ref bean="adminUser"/>
+	    		</list>
+	    	</property>
+	    	<property name="defaultUsers">
+	    		<list>
+	    			<ref bean="defaultUser"/>
+	    		</list>
+	    	</property>
+	    	<property name="propertiesHolder">
+	    		<util:properties id="restrictedConfiguration" location="classpath:restricted.config" />
+	    	</property>
+	    	<property name="restrictedUsernamesPropertyFilter" value="py.restricted.username" />
+	    	<property name="restrictedPasswordsPropertyFilter" value="py.restricted.password" />
+	    	<property name="restrictedEmailsPropertyFilter" value="py.restricted.email" />
+	    </bean>
+    </beans>
+    
+</beans>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="ehcache.xsd"
+	updateCheck="false" 
+	monitoring="autodetect" 
+	dynamicConfig="true">
+	
+    <diskStore path="java.io.tmpdir"/>
+    
+    <transactionManagerLookup 
+	    class="net.sf.ehcache.transaction.manager.DefaultTransactionManagerLookup" 
+	    properties="jndiName=java:/TransactionManager" 
+	    propertySeparator=";"/>
+	
+    <cacheManagerEventListenerFactory 
+    	class="" 
+    	properties=""/>
+    
+    <defaultCache maxEntriesLocalHeap="0" eternal="false" 
+    	timeToIdleSeconds="1200" timeToLiveSeconds="1200">
+ 	</defaultCache>
+ 	
+ 	
+ 	<!-- Checked -->
+ 	<!-- User Current cache is probably not performant enough -->
+ 	<!-- 
+    <cache name="user_current" maxEntriesLocalHeap="1000" timeToLiveSeconds="10" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="LRU">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+   	-->
+    	
+    <!-- This also determines registration speed -->
+    <cache name="user_username" maxEntriesLocalHeap="1000" timeToLiveSeconds="10" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+    
+    <!-- no longer used -->
+    <!-- 
+    <cache name="user_email" maxEntriesLocalHeap="1000" timeToLiveSeconds="15" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	-->
+ 	
+    <cache name="restricted" maxEntriesLocalHeap="500" timeToLiveSeconds="300" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+ 	<!-- Really can't cache this -->
+ 	<!-- 
+    <cache name="user" maxEntriesLocalHeap="1000" timeToLiveSeconds="15" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+   	-->
+ 	
+    <cache name="userInfo" maxEntriesLocalHeap="1000" timeToLiveSeconds="15" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="posting" maxEntriesLocalHeap="100" timeToLiveSeconds="30" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="comment" maxEntriesLocalHeap="100" timeToLiveSeconds="30" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="tag" maxEntriesLocalHeap="100" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="subscription" maxEntriesLocalHeap="100" timeToLiveSeconds="30" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="statistic" maxEntriesLocalHeap="15" timeToLiveSeconds="300" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+ 	<!-- Paged stuff, perfect accuracy is not required -->
+ 	
+    <cache name="posting_paged" maxBytesLocalHeap="500K" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="posting_user_paged" maxBytesLocalHeap="500K" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="comment_paged" maxBytesLocalHeap="500K" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="comment_user_paged" maxBytesLocalHeap="500K" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+   	
+   	<cache name="comment_reply_paged" maxBytesLocalHeap="500K" timeToLiveSeconds="30"
+   		overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+   		<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+ 	</cache>
+ 	
+    <cache name="tag_paged" maxBytesLocalHeap="100K" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+    <cache name="userInfo_paged" maxBytesLocalHeap="1M" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+ 	
+ 	<!-- Useless -->
+    <!-- 
+    <cache name="event_paged" maxBytesLocalHeap="100K" timeToLiveSeconds="120" 
+    	overflowToOffHeap="false" memoryStoreEvictionPolicy="FIFO">
+    	<sizeOfPolicy maxDepth="10000" maxDepthExceededBehavior="continue" />
+   	</cache>
+   	-->
+    	
+ 	<!-- 
+    <cache name="emailTaskCache" maxEntriesLocalHeap="1000" eternal="true" 
+    	memoryStoreEvictionPolicy="FIFO"/>
+    
+    <cache name="escrowCache" maxEntriesLocalHeap="500" eternal="false" 
+    	overflowToDisk="true" diskPersistent="true" timeToIdleSeconds="300" 
+    	timeToLiveSeconds="600" diskExpiryThreadIntervalSeconds="1" 
+    	memoryStoreEvictionPolicy="LFU">
+    </cache>
+ 	
+    <cache name="eventCache" maxEntriesLocalHeap="1000" eternal="true" 
+    	memoryStoreEvictionPolicy="FIFO"/>
+ 	
+    <cache name="feedbackCache" maxEntriesLocalHeap="1000" eternal="true" 
+    	memoryStoreEvictionPolicy="FIFO"/>
+ 	
+    <cache name="messageCache" maxEntriesLocalHeap="1000" eternal="true" 
+    	memoryStoreEvictionPolicy="FIFO"/>
+ 	-->
+    	
+	<!-- No need for adminAction, deal, payment, or valueAggregation, as these are
+	mostly written and rarely read -->
+ 	
+</ehcache>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:util="http://www.springframework.org/schema/util"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+	<context:component-scan base-package="com.py.py.service" />
+	<context:component-scan base-package="com.py.py.dto" />
+	<context:component-scan base-package="com.py.py.domain" />
+	<context:component-scan base-package="com.py.py.dao" />
+
+	<context:property-placeholder location="file://${penstro.config.location}/penstro.config" order="1" ignore-unresolvable="true" />
+	<context:property-placeholder location="file://${penstro.config.location}/penstrocredentials" order="2" ignore-unresolvable="true" />
+	<context:property-placeholder location="file://${penstro.config.location}/googlecredentials" order="3" />
+
+</beans>

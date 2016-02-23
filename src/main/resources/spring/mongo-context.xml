@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:context="http://www.springframework.org/schema/context"
+          xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+          xmlns:util="http://www.springframework.org/schema/util"
+          xsi:schemaLocation=
+          "http://www.springframework.org/schema/data/mongo
+          http://www.springframework.org/schema/data/mongo/spring-mongo-1.7.xsd
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+    <!-- Default bean name is 'mongo' -->
+    <!-- local -->
+    <mongo:mongo-client host="${py.mongo.host}" port="${py.mongo.port}" 
+    	credentials="'${py.mongo.credentials.username}:${py.mongo.credentials.password}@${py.mongo.credentials.database}'">
+    	<mongo:client-options
+    		connections-per-host="${py.mongo.connectionsPerHost}"
+    		threads-allowed-to-block-for-connection-multiplier="${py.mongo.threadsAllowedBlock}"
+    		connect-timeout="${py.mongo.connectTimeout}"
+    		socket-timeout="${py.mongo.socketTimeout}"
+    		ssl="true"/>
+    </mongo:mongo-client>
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    	<property name="targetObject">
+    		<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    			<property name="targetClass" value="java.lang.System" />
+    			<property name="targetMethod" value="getProperties" />
+    		</bean>
+    	</property>
+    	<property name="targetMethod" value="putAll" />
+    	<property name="arguments">
+    		<util:properties>
+    			<prop key="javax.net.ssl.keyStore">${py.mongo.ssl.keystorePath}</prop>
+    			<prop key="javax.net.ssl.keyStorePassword">${py.mongo.ssl.keystorePassword}</prop>
+    			<!-- 
+    			<prop key="javax.net.ssl.trustStore">${py.mongo.ssl.truststorePath}</prop>
+    			<prop key="javax.net.ssl.trustStorePassword">${py.mongo.ssl.truststorePassword}</prop>
+    			-->
+    		</util:properties>
+    	</property>
+    </bean>
+    
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+	    <constructor-arg ref="mongo" />
+	    <constructor-arg name="databaseName" value="${py.mongo.databaseName}" />
+    </bean>
+    
+    <mongo:repositories base-package="com.py.py.dao, com.py.py.dao.impl" />
+    
+</beans>
